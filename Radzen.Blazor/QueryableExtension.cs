@@ -877,7 +877,14 @@ namespace Radzen
                         {
                             if (IsEnumerable(column.FilterPropertyType) && column.FilterPropertyType != typeof(string) && comparison == "Contains")
                             {
-                                whereList.Add($@"(@{index}).Contains({property})", new object[] { column.GetFilterValue() });
+                                if (column.Property != column.FilterProperty && !string.IsNullOrEmpty(column.FilterProperty))
+                                {
+                                    whereList.Add($@"{column.Property}.Any(i => i.{column.FilterProperty}.Contains(""{index}""))", new object[] { column.GetFilterValue() });
+                                }
+                                else
+                                {
+                                    whereList.Add($@"(@{index}).Contains({property})", new object[] { column.GetFilterValue() });
+                                }
                             }
                             else
                             {
